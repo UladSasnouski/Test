@@ -1,0 +1,92 @@
+:root {
+    --base: #d5d825;
+    --width: 100px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    text-align: center;
+    color: rgb(0, 0, 0);
+    font-family: "helvetica neue", sans-serif;
+    font-weight: 100;
+    font-size: 20px;
+}
+.grid {
+    margin: 0;
+    max-width: 800px;
+    display: grid;
+    grid-template-rows: 0.1fr 0.1fr;
+    grid-template-columns: 0.9fr 0.9fr;
+}
+.text {
+    background-color: rgb(222, 222, 222);
+}
+.flex {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid black;
+    max-height: 600px;
+}
+.text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgb(12, 12, 11);
+    font-size: 24px;
+}
+
+#circle {
+    width: var(--width);
+    height: var(--width);
+    margin: 50px 10px 0px 10px;
+    border-radius: 50%;
+    background-color: var(--base);
+    cursor: pointer;
+    opacity: 70%;
+    transition: all 0.3s;
+}
+
+#rect {
+    width: var(--width);
+    height: var(--width);
+    margin: 50px 10px 0px 10px;
+    background-color: var(--base);
+    cursor: pointer;
+    opacity: 70%;
+    transition: all 0.3s;
+}
+
+#canvas-big {
+    border: 1px solid black;
+}
+
+#circle:hover,
+#rect:hover {
+    opacity: 100%;
+}
+
+.controls {
+    display: flex;
+    align-items: flex-end;
+    margin-top: 25px;
+}
+.container {
+    padding: 20px;
+}
+
+input[type="color"] {
+    border: transparent;
+    border-radius: 40px;
+    background: none;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+    border-radius: 40px;
+}
