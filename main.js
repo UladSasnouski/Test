@@ -1,11 +1,12 @@
+var inputs = document.querySelectorAll('.controls input');
 var canvas = document.getElementById('canvas-big');
 var ctx = canvas.getContext('2d');
 
 let items = [];
 let mouse = {
-    clicked: false,
     x: 0,
     y: 0,
+    clicked: false,
     heldOut: null,
     id: null
 };
@@ -16,7 +17,6 @@ canvas.addEventListener('mousedown', ({ offsetX, offsetY }) => {
     if (item) {
         putItem(item);
         mouse.heldOut = item;
-        console.log(mouse.heldOut);
     };
 });
 
@@ -75,9 +75,15 @@ function addCircle(x, y, radius, color) {
     items.push(item);
 };
 
-const findItem = (x, y) => items.filter(item => inСan(x, y, item)).pop();
+const findItem = (x, y) => items.filter(item => item.type === 'rect' ? inСanRect(x, y, item) : inСanCircle(x, y, item)).pop();
 
-const inСan = (x, y, item) => x > item.x && x < item.x + item.width && y > item.y && y < item.y + item.height;
+const inСanRect = (x, y, item) => x > item.x && x < item.x + item.width && y > item.y && y < item.y + item.height;
+
+const inСanCircle = (x, y, item) => {
+    var dx = item.x - x;
+    var dy = item.y - y;
+    return (dx * dx + dy * dy <= item.radius * item.radius);
+}
 
 function putItem(item) {
     items.splice(items.indexOf(item), 1);
@@ -119,15 +125,22 @@ function dragover_handler(e) {
 
 function drop_handler(e) {
     e.preventDefault();
-    mouse.x = e.pageX - canvas.offsetLeft - 50;
-    mouse.y = e.pageY - canvas.offsetTop - 50;
-    let colorBack = window.getComputedStyle(document.getElementById(`${mouse.id}`), null).getPropertyValue('background-color');
+    let properties = {
+        background: getProperties(mouse.id).background,
+        width: getProperties(mouse.id).width,
+        height: getProperties(mouse.id).height
+    };
+
     switch (mouse.id) {
         case 'rect':
-            addRect(mouse.x, mouse.y, 100, 100, `${colorBack}`);
+            mouse.x = e.pageX - canvas.offsetLeft - properties.width / 2;
+            mouse.y = e.pageY - canvas.offsetTop - properties.height / 2;
+            addRect(mouse.x, mouse.y, properties.width, properties.height, `${properties.background}`);
             break;
         case 'circle':
-            addCircle(mouse.x, mouse.y, 50, `${colorBack}`);
+            mouse.x = e.pageX - canvas.offsetLeft;
+            mouse.y = e.pageY - canvas.offsetTop;
+            addCircle(mouse.x, mouse.y, properties.width / 2, `${properties.background}`);
             break;
         default:
             return;
@@ -136,22 +149,36 @@ function drop_handler(e) {
     updateLocal();
 };
 
+const getProperties = (item) => {
+    let background = window.getComputedStyle(document.getElementById(`${item}`), null).getPropertyValue('background-color');
+    let width = window.getComputedStyle(document.getElementById(`${item}`), null).getPropertyValue('width');
+    let height = window.getComputedStyle(document.getElementById(`${item}`), null).getPropertyValue('height');
+    width = width.substring(0, width.length - 2);
+    height = height.substring(0, height.length - 2);
+    let properties = {
+        background: background,
+        width: +width,
+        height: +height
+    };
+    return properties;
+}
+
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     items.forEach(element => {
         switch (element.type) {
             case 'rect':
-                if (element.x >= canvas.width - 100 || element.x <= 0) {
-                    if (element.x >= canvas.width - 100) {
-                        element.x = canvas.width - 101;
+                if (element.x >= canvas.width - element.height || element.x <= 0) {
+                    if (element.x >= canvas.width - element.height) {
+                        element.x = canvas.width - element.height + 1;
                     } else {
                         element.x = 1;
                     };
                 };
-                if (element.y >= canvas.height - 100 || element.y <= 0) {
-                    if (element.y >= canvas.width - 100) {
-                        element.y = canvas.width - 101;
+                if (element.y >= canvas.height - element.height || element.y <= 0) {
+                    if (element.y >= canvas.width - element.height) {
+                        element.y = canvas.width - element.height + 1;
                     } else {
                         element.y = 1;
                     };
@@ -165,6 +192,20 @@ function render() {
                 ctx.fill();
                 break;
             case 'circle':
+                if (element.x >= canvas.width - element.radius || element.x <= element.radius) {
+                    if (element.x >= canvas.width - element.radius) {
+                        element.x = canvas.width - element.radius + 1;
+                    } else {
+                        element.x = element.radius + 1;
+                    };
+                };
+                if (element.y >= canvas.height - element.radius || element.y <= element.radius) {
+                    if (element.y >= canvas.width - element.radius) {
+                        element.y = canvas.width - element.radius + 1;
+                    } else {
+                        element.y = element.radius + 1;
+                    };
+                };
                 ctx.beginPath();
                 ctx.arc(element.x, element.y, element.radius, 0, (Math.PI / 180) * 360);
                 ctx.fillStyle = element.color;
@@ -180,6 +221,14 @@ function render() {
 };
 
 setInterval(render, 16);
+
+function handleUpdate() {
+    const suffix = this.dataset.sizing || '';
+    document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+}
+
+inputs.forEach(input => input.addEventListener('change', handleUpdate));
+inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
 
 function updateLocal() {
     localStorage.setItem('storedItems', JSON.stringify(items));

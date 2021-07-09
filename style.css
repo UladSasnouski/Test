@@ -1,6 +1,19 @@
+:root {
+    --base: #d5d825;
+    --width: 100px;
+}
+
 * {
     margin: 0;
     padding: 0;
+}
+
+body {
+    text-align: center;
+    color: rgb(0, 0, 0);
+    font-family: "helvetica neue", sans-serif;
+    font-weight: 100;
+    font-size: 20px;
 }
 .grid {
     margin: 0;
@@ -17,6 +30,7 @@
     align-items: center;
     flex-direction: column;
     border: 1px solid black;
+    max-height: 600px;
 }
 .text {
     display: flex;
@@ -24,25 +38,24 @@
     align-items: center;
     color: rgb(12, 12, 11);
     font-size: 24px;
-    /* color: #06b800; */
 }
 
 #circle {
-    width: 100px;
-    height: 100px;
-    margin-top: 50px;
+    width: var(--width);
+    height: var(--width);
+    margin: 50px 10px 0px 10px;
     border-radius: 50%;
-    background-color: rgb(224, 20, 61);
+    background-color: var(--base);
     cursor: pointer;
     opacity: 70%;
     transition: all 0.3s;
 }
 
 #rect {
-    width: 100px;
-    height: 100px;
-    margin-top: 50px;
-    background-color: #0ebe08;
+    width: var(--width);
+    height: var(--width);
+    margin: 50px 10px 0px 10px;
+    background-color: var(--base);
     cursor: pointer;
     opacity: 70%;
     transition: all 0.3s;
@@ -55,4 +68,25 @@
 #circle:hover,
 #rect:hover {
     opacity: 100%;
+}
+
+.controls {
+    display: flex;
+    align-items: flex-end;
+    margin-top: 25px;
+}
+.container {
+    padding: 20px;
+}
+
+input[type="color"] {
+    border: transparent;
+    border-radius: 40px;
+    background: none;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+    border-radius: 40px;
 }
